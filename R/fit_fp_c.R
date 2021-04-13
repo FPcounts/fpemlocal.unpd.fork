@@ -119,6 +119,8 @@ fit_fp_csub <- function(
   nburnin = 500,
   nthin = max(1, floor((niter - nburnin)*nchains / 2000))
 ) {
+  # EMUs are not to be used for unmarried women
+  if (is_in_union == "N") service_stats_filepath <- NULL
   # check inputs to this wrapper
   check_inputs(
     surveydata_filepath = surveydata_filepath,
@@ -162,6 +164,11 @@ fit_fp_csub <- function(
     n.burnin = nburnin,
     n.thin = nthin
   )
+  # This is a hack to remove jags data inputs from the global environment
+  # This due to poor functionality within R2jags, can be removed if you switch to another package for parallel computing
+  temp <- list(list_auxiliary, list_global, list_bias, list_service_stats)
+  names_to_remove_from_envr <- c(unlist(lapply(temp, names)), "Y")
+  rm(list = names_to_remove_from_envr, envir = globalenv())
   diagnostic_check(diagnostic = diagnostic,
                    mod = mod,
                    core_data = core_data)

@@ -104,22 +104,14 @@ impute_global_se <- function(wide_data) {
 #'
 #' Imputation of (SE) variables is carried out annually with UNPD survey data \code{\link{fit_fp_csub}} 
 #' as [@Cahill et al 2017 (appendix page 16)]. The summary of this procedure is described 
-#' below. 
-#' 
-#' There are two scenarios. Each scenario has a corresponding procedure.
-#' \describe{
-#'     \item{1. (Completely missing) all entries missing for a coutnry's SE variable}
-#'     \item{2. (Partially missing) some entries missing for a country's SE variable }
-#' }
-#' 
+#' below. There are two scenarios. Each scenario has a corresponding procedure.
+#' \describe{\item{1. (Completely missing) all entries missing for a coutnry's SE variable}
+#'     \item{2. (Partially missing) some entries missing for a country's SE variable } }
 #' For scenario 1, the imputation is carried out by calculating the maximum of known 
-#' sampling errors across all other countries and setting the unknown sampling errors 
-#' equal to the median of these maximums.
-#' 
+#' sampling errors across all other countries and setting the unknown sampling errors equal to the median of these maximums.
 #' For scenario 2 we impute the sampling errors by setting them equal to the maximum 
 #' of the known sampling errors in that country.
 #' @param contraceptive_use \emph{'Data.frame'} A data.frame from \code{\link[contraceptive_use]{contraceptive_use}}
-#'
 #' @return \emph{'Data.frame'} The input data with se imputed
 impute_se <- function(contraceptive_use) {
   wide_data <- contraceptive_use
@@ -174,32 +166,25 @@ gen_max_se_data <- function(wide_data) {
 
 #' Impute user survey data standard errors
 #' 
-#' 
 #' If a user provides data where standard error (SE) columns have missing values, the 
 #' corresponding pre-calculated SE from UNPD data are used to impute the missing values. 
 #' The imputation of UNPD survey data is described at the bottom of this document in
 #' the details section.
-#' 
 #' Imputation of (SE) variables is carried out annually with UNPD survey data \code{\link{fit_fp_csub}} 
 #' as [@Cahill et al 2017 (appendix page 16)]. The summary of this procedure is described 
 #' below. 
-#' 
 #' There are two scenarios. Each scenario has a corresponding procedure.
 #' \describe{
 #'     \item{1. (Completely missing) all entries missing for a coutnry's SE variable}
 #'     \item{2. (Partially missing) some entries missing for a country's SE variable }
 #' }
-#' 
 #' For scenario 1, the imputation is carried out by calculating the maximum of known 
 #' sampling errors across all other countries and setting the unknown sampling errors 
 #' equal to the median of these maximums.
-#' 
 #' For scenario 2 we impute the sampling errors by setting them equal to the maximum 
 #' of the known sampling errors in that country.
-#' 
 #' @param user_data \emph{\sQuote{Data.frame}} Survey data such as \code{\link{contraceptive_use}}.
 #' @inheritParams fit_fp_c
-#'
 #' @return \emph{\sQuote{Data.frame}} Imputed survey data
 #' @export
 impute_user_se <- function(user_data, subnational, is_in_union) {
@@ -238,7 +223,6 @@ impute_user_se <- function(user_data, subnational, is_in_union) {
 #' Adds indicator columns to indicate if a value has been imputed
 #'
 #' @param wide_data \emph{'Data.frame'} A data.frame from \code{\link[contrapcetive_use]{contrapcetive_use}}
-#'
 #' @return \emph{'Data.frame'} A data.frame with logical indicator TRUE indicating it is imputed FALSE being a core value
 impute_indicator <- function(data) {
   var_names <- c(
@@ -261,7 +245,6 @@ impute_indicator <- function(data) {
 #'
 #' @param contraceptive_use 
 #' @param is_in_union 
-#'
 #' @return
 #' @export
 impute_packagedata_se_one_union <- function(contraceptive_use, is_in_union) {
@@ -289,7 +272,6 @@ impute_packagedata_se_one_union <- function(contraceptive_use, is_in_union) {
 #' Impute package data. This can be used on user data but takes a while to run. Instead impute_user_se uses pre-computed imputations for faster results.
 #'
 #' @param contraceptive_use 
-#'
 #' @return
 #' @export
 impute_packagedata_se <- function(contraceptive_use) {
