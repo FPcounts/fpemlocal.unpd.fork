@@ -30,7 +30,7 @@ write.csv(contraceptive_use_archived_2020, here::here("data-raw/contraceptive_us
 
 
 # Read and impute
-contraceptive_use <- readr::read_csv("data-raw/contraceptive_use.csv") %>%
+contraceptive_use <- readr::read_csv(here::here("data-raw/contraceptive_use.csv")) %>%
   fpemlocal::impute_packagedata_se() %>% 
   purrr::pluck("contraceptive_use_imputed") 
 # Check the format compared to last year
@@ -51,7 +51,7 @@ write.csv(contraceptive_use_track20_archived_2020, here::here("data-raw/contrace
 
 
 # Read
-contraceptive_use_track20 <- read.csv("data-raw/Track20Database121819_Fixed.csv")
+contraceptive_use_track20 <- read.csv(here::here("data-raw/Track20Database121819_Fixed.csv"))
 # check format
 fpemlocal::format_check(format_list = fpemlocal::contraceptive_use_format, 
              data = contraceptive_use_track20)
@@ -60,7 +60,7 @@ usethis::use_data(contraceptive_use_track20, overwrite = TRUE)
 
 # Population count data
 ```{r}
-population_counts <- readr::read_csv("data-raw/population_counts.csv") #use of readdelimn here is to format as tibble
+population_counts <- readr::read_csv(here::here("data-raw/population_counts.csv")) #use of readdelimn here is to format as tibble
 usethis::use_data(population_counts, overwrite = TRUE)
 ```
 
@@ -71,9 +71,9 @@ usethis::use_data(population_counts, overwrite = TRUE)
 # Note some name changes and hacks here
 
 # Read the two datasets
-data1 <- read.csv("data-raw/division_classifications.csv")
+data1 <- read.csv(here::here("data-raw/division_classifications.csv"))
 divisions <-
-  read.csv("data-raw/country_and_area_classification.csv")
+  read.csv(here::here("data-raw/country_and_area_classification.csv"))
 # CHange some names to package friendly names
 divisions <- divisions %>%
   dplyr::rename(
@@ -100,8 +100,8 @@ usethis::use_data(divisions, overwrite = TRUE)
 
 # Global estimates
 ```{r}
-load("data-raw/globalrun_data/global_estimates_married.rda")
-load("data-raw/globalrun_data/global_estimates_unmarried.rda")
+mw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_married.rda"))
+uw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_unmarried.rda"))
 global_estimates_married <- mw_perc %>%
   dplyr::mutate(is_in_union = "Y")
 global_estimates_unmarried <- uw_perc %>%
@@ -136,10 +136,10 @@ usethis::use_data(global_estimates, overwrite = TRUE)
 # globalrun_input_m <- fpemdata::read_rda(path = "data-raw/globalrun_data/globalrun_input_m.rda")
 # globalrun_input_u <- fpemdata::read_rda(path = "data-raw/globalrun_data/globalrun_input_u.rda")
 
-globalrun_input_m <- readr::read_csv("data-raw/globalrun_data/data_input_married_exported_from_mcmc_meta.csv")
-globalrun_input_u <- readr::read_csv("data-raw/globalrun_data/data_input_unmarried_exported_from_mcmc_meta.csv")
-globalrun_output_m <- fpemlocal::read_rda(path = "data-raw/globalrun_data/globalrun_output_m.rda")
-globalrun_output_u <- fpemlocal::read_rda(path = "data-raw/globalrun_data/globalrun_output_u.rda")
+globalrun_input_m <- readr::read_csv(here::here("data-raw/globalrun_data/data_input_married_exported_from_mcmc_meta.csv"))
+globalrun_input_u <- readr::read_csv(here::here("data-raw/globalrun_data/data_input_unmarried_exported_from_mcmc_meta.csv"))
+globalrun_output_m <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/globalrun_output_m.rda"))
+globalrun_output_u <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/globalrun_output_u.rda"))
 
 index_area <- fpemlocal::index_area(globalrun_input_m, run_type = "mwra")
 index_datatype <- fpemlocal::index_datatype(globalrun_input_m)
@@ -163,7 +163,7 @@ usethis::use_data(index_m, index_u,
 
 #fp2020 countries
 ```{r}
-temp <- read.csv("data-raw/legacy.csv")
+temp <- read.csv(here::here("data-raw/legacy.csv"))
 fp2020 <- temp %>% filter(FP2020.country == "Yes") %>% select(division_numeric_code)
 usethis::use_data(fp2020, overwrite = TRUE)
 ```
