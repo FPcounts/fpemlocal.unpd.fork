@@ -1,17 +1,6 @@
-# This entire script must run annually when new UNPD data is provided.
-devtools::load_all()
-contraceptive_use <- readr::read_csv("data-raw/contraceptive_use.csv") #use of readdelimn here is just to format as tibble
-
-# We now add imputed version of se columns to contracetpive use data. Meta data has been updated accordingly.
-contraceptive_use <- impute_packagedata_se(contraceptive_use) %>% 
-  purrr::pluck("contraceptive_use_imputed") 
-
-usethis::use_data(contraceptive_use, overwrite = TRUE)
-
-
 # This format list uses the data above. The format list is used to check user survey data.
 library(dplyr)
-data <- contraceptive_use
+data <- fpemlocal::contraceptive_use
 #missing = FLASE if missing not allowed
 contraceptive_use_format <- list(
   "division_numeric_code" = list(
