@@ -22,13 +22,6 @@ Here is a list of datasets below which you may be replacing. You will probably w
 
 # UNPD contraceptive data
 ```{r}
-# Save the soon to be replaced data under a new name such that the new data can take its place in the package
-# Just  don't save it as package data as we don't want average user confusing it with data they should be using
-# this is just an example feel free to save somewhere else, maybe an achive folder within data-raw
-contraceptive_use_archived_2020 <- fpemlocal::contraceptive_use
-write.csv(contraceptive_use_archived_2020, here::here("data-raw/contraceptive_use_archived_2020.csv"))
-
-
 # Read and impute
 contraceptive_use <- readr::read_csv(here::here("data-raw/contraceptive_use.csv")) %>%
   fpemlocal::impute_packagedata_se() %>% 
@@ -45,11 +38,6 @@ usethis::use_data(contraceptive_use, overwrite = TRUE)
 
 # track 20 data
 ```{r}
-# Save the soon to be replaced data under a new name such that the new data can take its place in the package
-contraceptive_use_track20_archived_2020 <- fpemlocal::contraceptive_use_track20
-write.csv(contraceptive_use_track20_archived_2020, here::here("data-raw/contraceptive_use_track20_archived_2020.csv"))
-
-
 # Read
 contraceptive_use_track20 <- read.csv(here::here("data-raw/Track20Database121819_Fixed.csv"))
 # check format
@@ -60,7 +48,11 @@ usethis::use_data(contraceptive_use_track20, overwrite = TRUE)
 
 # Population count data
 ```{r}
+#read
 population_counts <- readr::read_csv(here::here("data-raw/population_counts.csv")) #use of readdelimn here is to format as tibble
+#check that format is the same
+janitor::compare_df_cols(population_counts, fpemlocal::population_counts, return = "mismatch")
+#save since it checks out
 usethis::use_data(population_counts, overwrite = TRUE)
 ```
 
@@ -100,8 +92,8 @@ usethis::use_data(divisions, overwrite = TRUE)
 
 # Global estimates
 ```{r}
-mw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_married.rda"))
-uw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_unmarried.rda"))
+mw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_married_2021-03-12-1144.rda"))
+uw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_unmarried_2021-03-12-1144.rda"))
 global_estimates_married <- mw_perc %>%
   dplyr::mutate(is_in_union = "Y")
 global_estimates_unmarried <- uw_perc %>%
@@ -126,20 +118,21 @@ global_estimates <- dplyr::bind_rows(global_estimates_married,
                 "97.5%" = "0.975") %>%
   dplyr::mutate(model = "global")
 
+#check is equal to current package version
+janitor::compare_df_cols(global_estimates, fpemlocal::global_estimates, return = "mismatch")
 
+# all checks out so lets save it
 usethis::use_data(global_estimates, overwrite = TRUE)
-
+rm(list = ls()) #clearing environment as it has too much data
 ```
 
 # Global parameters and global index data saved as internal Sysdata from processed from the global run
 ```{r}
-# globalrun_input_m <- fpemdata::read_rda(path = "data-raw/globalrun_data/globalrun_input_m.rda")
-# globalrun_input_u <- fpemdata::read_rda(path = "data-raw/globalrun_data/globalrun_input_u.rda")
 
-globalrun_input_m <- readr::read_csv(here::here("data-raw/globalrun_data/data_input_married_exported_from_mcmc_meta.csv"))
-globalrun_input_u <- readr::read_csv(here::here("data-raw/globalrun_data/data_input_unmarried_exported_from_mcmc_meta.csv"))
-globalrun_output_m <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/globalrun_output_m.rda"))
-globalrun_output_u <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/globalrun_output_u.rda"))
+globalrun_input_m <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_mcmc_meta_married_2021-03-12-1144.rda"))
+globalrun_input_u <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_mcmc_meta_unmarried_2021-03-12-1144.rda"))
+globalrun_output_m <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/global_output_married_2021-03-12-1144.rda"))
+globalrun_output_u <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/global_output_unmarried_2021-03-12-1144.rda"))
 
 index_area <- fpemlocal::index_area(globalrun_input_m, run_type = "mwra")
 index_datatype <- fpemlocal::index_datatype(globalrun_input_m)
@@ -150,6 +143,26 @@ index_area <- fpemlocal::index_area(globalrun_input_u, run_type = "uwra")
 index_datatype <- fpemlocal::index_datatype(globalrun_input_u)
 index_u <- list(index_area_df = index_area,
                 index_datatype = index_datatype)
+
+
+#compare all of these in some way? not sure what is best as they are lists
+simple_list_check <- function(l1, l2) {
+  namec <- names(l1) %in% names(l2) %>% all
+  classc <- lapply(l1, class) %in% lapply(l2, class) %>% all
+  if(namec & classc) {
+    return("names and classes match")
+  } else {
+    return("names and classes dont match")
+  }
+}
+simple_list_check(globalrun_input_m, fpemlocal:::globalrun_input_m)
+simple_list_check(globalrun_input_m$winbugs.data, fpemlocal:::globalrun_input_m$winbugs.data)
+simple_list_check(globalrun_input_u, fpemlocal:::globalrun_input_u)
+simple_list_check(globalrun_output_m, fpemlocal:::globalrun_output_m)
+simple_list_check(globalrun_output_u, fpemlocal:::globalrun_output_u)
+simple_list_check(index_m, fpemlocal:::index_m)
+simple_list_check(index_u, fpemlocal:::index_u)
+
 
 usethis::use_data(index_m, index_u,
                   globalrun_input_m, 
