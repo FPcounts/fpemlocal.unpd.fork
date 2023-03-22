@@ -15,9 +15,6 @@ A data frame with 6 variables:
   ...
 }
 }
-\source{
-
-}
 \usage{
 service_stats_format
 }

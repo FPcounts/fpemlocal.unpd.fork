@@ -11,9 +11,6 @@ impute_packagedata_se_one_union(contraceptive_use, is_in_union)
 
 \item{is_in_union}{}
 }
-\value{
-
-}
 \description{
 Impute package data per union. This can be used on user data but takes a while to run. Instead impute_user_se uses pre-computed imputations for faster results.
 }

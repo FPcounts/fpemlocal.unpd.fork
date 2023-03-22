@@ -11,9 +11,6 @@ calc_fp_aggregate(fits, population_data = NULL)
 
 \item{population_data}{\emph{\sQuote{Data.frame}} Population count data such as \code{\link{population_counts}}.}
 }
-\value{
-
-}
 \description{
 calc_fp_aggregate
 }

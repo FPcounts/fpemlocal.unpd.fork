@@ -11,9 +11,6 @@ subset_population(population_data, divs_perlevel)
 
 \item{divs_perlevel}{}
 }
-\value{
-
-}
 \description{
 subset_population
 }

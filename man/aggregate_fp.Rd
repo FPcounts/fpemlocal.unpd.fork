@@ -11,9 +11,6 @@ aggregate_fp(posterior_samples, population_data)
 
 \item{population_data}{}
 }
-\value{
-
-}
 \description{
 aggregate_fp
 }
