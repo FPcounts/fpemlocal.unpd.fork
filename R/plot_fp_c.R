@@ -59,8 +59,9 @@ plot_fp_csub <- function(
 ) {
   indicators <- indicators %>% unlist()
   observations <- fit %>% purrr::chuck( "core_data", "observations")
-
-  if(!is.null(observations)) {
+#print(observations)
+#print(dim(observations))
+  if(!is.null(observations) & dim(observations)[1] != 0) {
     observations <- observations %>%
       dplyr::mutate(data_series_type = as.factor(data_series_type)) %>%
       dplyr::mutate(group_type_relative_to_baseline = as.factor(group_type_relative_to_baseline))

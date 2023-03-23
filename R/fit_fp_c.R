@@ -49,6 +49,9 @@ fit_fp_c <- function(
   is_in_union,
                            ...) {
   if (is_in_union == "ALL") {
+    if (is.null(population_data)){
+      warning("No population data provided, UNPD population counts used.")
+    }
     fits <-
       purrr::pmap(list(is_in_union = list(
         Y = "Y", N = "N"

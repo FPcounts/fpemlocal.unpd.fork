@@ -51,7 +51,9 @@ usethis::use_data(contraceptive_use_track20, overwrite = TRUE)
 # Population count data
 ```{r}
 #read
-population_counts <- readr::read_csv(here::here("data-raw/population_counts_2022-02-15.csv")) #use of readdelimn here is to format as tibble
+population_counts <- readr::read_csv(here::here("data-raw/population_counts_2022-02-15.csv")) %>%
+  #use of readdelimn here is to format as tibble
+  dplyr::mutate(mid_year = floor(mid_year))
 #check that format is the same
 janitor::compare_df_cols(population_counts, fpemlocal::population_counts, return = "mismatch")
 #save since it checks out
