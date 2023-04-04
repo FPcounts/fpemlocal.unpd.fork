@@ -23,13 +23,15 @@ Here is a list of datasets below which you may be replacing. You will probably w
 # UNPD contraceptive data
 ```{r}
 # Read and impute
-contraceptive_use <- readr::read_csv(here::here("data-raw/contraceptive_use.csv")) %>%
+contraceptive_use <- readr::read_csv(here::here("data-raw/contraceptive_use_2022-02-15.csv")) %>%
   fpemlocal::impute_packagedata_se() %>% 
   purrr::pluck("contraceptive_use_imputed") 
 # Check the format compared to last year
 # If the dev every intends to change the format going forward you need to edit the script
 # data-raw/contraceptive_use_format.R which is fed to R/format_check
-fpemlocal::format_check(format_list = fpemlocal::contraceptive_use_format, 
+#fpemlocal::format_check(format_list = fpemlocal::contraceptive_use_format, 
+#             data = contraceptive_use)
+format_check(format_list = fpemlocal::contraceptive_use_format, 
              data = contraceptive_use)
 # Save as package data if the format is correct
 usethis::use_data(contraceptive_use, overwrite = TRUE)
@@ -49,7 +51,9 @@ usethis::use_data(contraceptive_use_track20, overwrite = TRUE)
 # Population count data
 ```{r}
 #read
-population_counts <- readr::read_csv(here::here("data-raw/population_counts.csv")) #use of readdelimn here is to format as tibble
+population_counts <- readr::read_csv(here::here("data-raw/population_counts_2022-02-15.csv")) %>%
+  #use of readdelimn here is to format as tibble
+  dplyr::mutate(mid_year = floor(mid_year))
 #check that format is the same
 janitor::compare_df_cols(population_counts, fpemlocal::population_counts, return = "mismatch")
 #save since it checks out
@@ -92,8 +96,8 @@ usethis::use_data(divisions, overwrite = TRUE)
 
 # Global estimates
 ```{r}
-mw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_married_2021-03-12-1144.rda"))
-uw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_estimates_unmarried_2021-03-12-1144.rda"))
+mw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_estimates_married.rda"))
+uw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_estimates_unmarried.rda"))
 global_estimates_married <- mw_perc %>%
   dplyr::mutate(is_in_union = "Y")
 global_estimates_unmarried <- uw_perc %>%
@@ -129,10 +133,10 @@ rm(list = ls()) #clearing environment as it has too much data
 # Global parameters and global index data saved as internal Sysdata from processed from the global run
 ```{r}
 
-globalrun_input_m <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_mcmc_meta_married_2021-03-12-1144.rda"))
-globalrun_input_u <- fpemlocal::read_rda(here::here("data-raw/globalrun_data/global_mcmc_meta_unmarried_2021-03-12-1144.rda"))
-globalrun_output_m <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/global_output_married_2021-03-12-1144.rda"))
-globalrun_output_u <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data/global_output_unmarried_2021-03-12-1144.rda"))
+globalrun_input_m <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_mcmc_meta_married.rda"))
+globalrun_input_u <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_mcmc_meta_unmarried.rda"))
+globalrun_output_m <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data_20220215/global_output_married.rda"))
+globalrun_output_u <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data_20220215/global_output_unmarried.rda"))
 
 index_area <- fpemlocal::index_area(globalrun_input_m, run_type = "mwra")
 index_datatype <- fpemlocal::index_datatype(globalrun_input_m)

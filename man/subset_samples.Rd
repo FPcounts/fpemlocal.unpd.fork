@@ -11,9 +11,6 @@ subset_samples(posterior_samples, divs_perlevel)
 
 \item{divs_perlevel}{}
 }
-\value{
-
-}
 \description{
 subset_samples
 }

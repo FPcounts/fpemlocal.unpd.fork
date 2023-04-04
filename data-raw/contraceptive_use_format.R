@@ -59,12 +59,12 @@ contraceptive_use_format <- list(
     "missing" = data$contraceptive_use_any %>% is.na() %>% any(),
     "required" = TRUE
   ),
-  "unmet_need_modern" = list(
-    "type" = "range",
-    "valid" = c(0, 1),
-    "missing" = data$unmet_need_modern %>% is.na() %>% any(),
-    "required" = TRUE
-  ),
+ # "unmet_need_modern" = list(
+ #   "type" = "range",
+ #   "valid" = c(0, 1),
+ #   "missing" = data$unmet_need_modern %>% is.na() %>% any(),
+ #   "required" = TRUE
+ # ),
   "unmet_need_any" = list(
     "type" = "range",
     "valid" = c(0, 1),

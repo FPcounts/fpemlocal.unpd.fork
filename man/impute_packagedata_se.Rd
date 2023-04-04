@@ -9,9 +9,6 @@ impute_packagedata_se(contraceptive_use)
 \arguments{
 \item{contraceptive_use}{}
 }
-\value{
-
-}
 \description{
 Impute package data. This can be used on user data but takes a while to run. Instead impute_user_se uses pre-computed imputations for faster results.
 }
