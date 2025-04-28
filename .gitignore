@@ -40,7 +40,6 @@ rsconnect/
 .Rproj.user
 
 
-doc
-Meta
-output
-vignettes/internal_vignettes/output
+# OS files
+Desktop.ini
+.DS_Store
