@@ -1,0 +1,193 @@
+---
+title: "Annual data updates"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+devtools::load_all()
+```
+
+This script must run annually when new UNPD or track20 data is provided.
+Make sure to build package after!! At the end of the script
+All of the paths to data in this document will be replaced annually.
+Here is a list of datasets below which you may be replacing. You will probably want to replace the pre-existing raw data files as you go through this markdown.
+-contraceptive use data
+-track 20 data
+-population count data
+-geographic division data
+-global estimates
+-global parameters
+-fo2020 countries
+
+# UNPD contraceptive data
+```{r}
+# Read and impute
+contraceptive_use <- readr::read_csv(here::here("data-raw/input_all_women_with_SEs_verified_2024-07-02-ASCII.csv")) %>%
+  fpemlocal::impute_packagedata_se() %>% 
+  purrr::pluck("contraceptive_use_imputed") 
+# Check the format compared to last year
+# If the dev every intends to change the format going forward you need to edit the script
+# data-raw/contraceptive_use_format.R which is fed to R/format_check
+#fpemlocal::format_check(format_list = fpemlocal::contraceptive_use_format, 
+#             data = contraceptive_use)
+format_check(format_list = fpemlocal::contraceptive_use_format, 
+             data = contraceptive_use)
+# Save as package data if the format is correct
+usethis::use_data(contraceptive_use, overwrite = TRUE)
+```
+
+
+# track 20 data
+```{r}
+# Read
+contraceptive_use_track20 <- read.csv(here::here("data-raw/Track20Database121819_Fixed.csv"))
+# check format
+fpemlocal::format_check(format_list = fpemlocal::contraceptive_use_format, 
+             data = contraceptive_use_track20)
+usethis::use_data(contraceptive_use_track20, overwrite = TRUE)
+```
+
+# Population count data
+```{r}
+#read
+population_counts <- readr::read_csv(here::here("data-raw/population_counts_2022-02-15.csv")) %>%
+  #use of readdelimn here is to format as tibble
+  dplyr::mutate(mid_year = floor(mid_year))
+#check that format is the same
+janitor::compare_df_cols(population_counts, fpemlocal::population_counts, return = "mismatch")
+#save since it checks out
+usethis::use_data(population_counts, overwrite = TRUE)
+```
+
+
+
+# Geographic division data. Not sure if we update every year
+```{r}
+# Note some name changes and hacks here
+
+# Read the two datasets
+data1 <- read.csv(here::here("data-raw/division_classifications.csv"))
+divisions <-
+  read.csv(here::here("data-raw/country_and_area_classification.csv"))
+# CHange some names to package friendly names
+divisions <- divisions %>%
+  dplyr::rename(
+    name_country = 'Country or area',
+    name_sub_region = 'Region',
+    name_region = "Major area"
+  ) %>%
+  dplyr::select(division_numeric_code,
+                name_country,
+                name_region,
+                name_sub_region)
+divisions <- left_join(divisions, data1)
+
+#2020 HACKS
+divisions <- fpemdata::divisions
+divisions$is_unmarried_sexual_activity[which(divisions$name_country == "South Sudan")] <-
+  "N"
+divisions <- divisions %>%
+  dplyr::filter(division_numeric_code != 732) # [1] "Western Sahara"
+usethis::use_data(divisions, overwrite = TRUE)
+
+```
+
+
+# Global estimates
+```{r}
+mw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_estimates_married.rda"))
+uw_perc <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_estimates_unmarried.rda"))
+global_estimates_married <- mw_perc %>%
+  dplyr::mutate(is_in_union = "Y")
+global_estimates_unmarried <- uw_perc %>%
+  dplyr::mutate(is_in_union = "N")
+global_estimates <- dplyr::bind_rows(global_estimates_married,
+                 global_estimates_unmarried) %>%
+  tidyr::gather(year, value, "1970.5":"2030.5") %>% 
+  dplyr::mutate(year = as.numeric(year)) %>%
+  tidyr::spread(Percentile,  value) %>%
+  dplyr::rename(division_numeric_code = Iso,
+                indicator = par) %>%
+  dplyr::rename_all(tolower) %>%
+  dplyr::select(-name) %>%
+  dplyr::mutate(indicator = dplyr::recode(indicator,
+                                          unmet = "unmet_need_any",
+                                          modern = "contraceptive_use_modern",
+                                          traditional = "contraceptive_use_traditional")) %>%
+  dplyr::rename("2.5%" = "0.025",
+                "10%" = "0.1",
+                "50%" = "0.5",
+                "90%" = "0.9",
+                "97.5%" = "0.975") %>%
+  dplyr::mutate(model = "global")
+
+#check is equal to current package version
+janitor::compare_df_cols(global_estimates, fpemlocal::global_estimates, return = "mismatch")
+
+# all checks out so lets save it
+usethis::use_data(global_estimates, overwrite = TRUE)
+rm(list = ls()) #clearing environment as it has too much data
+```
+
+# Global parameters and global index data saved as internal Sysdata from processed from the global run
+```{r}
+
+globalrun_input_m <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_mcmc_meta_married.rda"))
+globalrun_input_u <- fpemlocal::read_rda(here::here("data-raw/globalrun_data_20220215/global_mcmc_meta_unmarried.rda"))
+globalrun_output_m <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data_20220215/global_output_married.rda"))
+globalrun_output_u <- fpemlocal::read_rda(here::here(path = "data-raw/globalrun_data_20220215/global_output_unmarried.rda"))
+
+index_area <- fpemlocal::index_area(globalrun_input_m, run_type = "mwra")
+index_datatype <- fpemlocal::index_datatype(globalrun_input_m)
+index_m <- list(index_area_df = index_area,
+                index_datatype = index_datatype)
+
+index_area <- fpemlocal::index_area(globalrun_input_u, run_type = "uwra")
+index_datatype <- fpemlocal::index_datatype(globalrun_input_u)
+index_u <- list(index_area_df = index_area,
+                index_datatype = index_datatype)
+
+
+#compare all of these in some way? not sure what is best as they are lists
+simple_list_check <- function(l1, l2) {
+  namec <- names(l1) %in% names(l2) %>% all
+  classc <- lapply(l1, class) %in% lapply(l2, class) %>% all
+  if(namec & classc) {
+    return("names and classes match")
+  } else {
+    return("names and classes dont match")
+  }
+}
+simple_list_check(globalrun_input_m, fpemlocal:::globalrun_input_m)
+simple_list_check(globalrun_input_m$winbugs.data, fpemlocal:::globalrun_input_m$winbugs.data)
+simple_list_check(globalrun_input_u, fpemlocal:::globalrun_input_u)
+simple_list_check(globalrun_output_m, fpemlocal:::globalrun_output_m)
+simple_list_check(globalrun_output_u, fpemlocal:::globalrun_output_u)
+simple_list_check(index_m, fpemlocal:::index_m)
+simple_list_check(index_u, fpemlocal:::index_u)
+
+
+usethis::use_data(index_m, index_u,
+                  globalrun_input_m, 
+                  globalrun_input_u,
+                  globalrun_output_m,
+                  globalrun_output_u, 
+                  internal = TRUE,
+                  overwrite= TRUE)
+```
+
+
+#fp2020 countries
+```{r}
+temp <- read.csv(here::here("data-raw/legacy.csv"))
+fp2020 <- temp %>% filter(FP2020.country == "Yes") %>% select(division_numeric_code)
+usethis::use_data(fp2020, overwrite = TRUE)
+```
+
+# Build package
+```{r}
+devtools::document()
+devtools::build(vignettes = FALSE)
+```
+
