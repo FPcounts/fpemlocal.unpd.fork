@@ -10,7 +10,7 @@ Description: The local implementation of the Family Planning Estimation Model, f
 License: MIT + file LICENSE
 Depends:
     R2jags,
-    R (>= 2.10)
+    R (>= 3.5)
 Imports:
     magrittr,
     dplyr,
@@ -18,7 +18,13 @@ Imports:
     readr,
     rlang,
     purrr
-Suggests: knitr, rmarkdown, testthat, ggplot2, grid, gridExtra
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat,
+    ggplot2,
+    grid,
+    gridExtra
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
