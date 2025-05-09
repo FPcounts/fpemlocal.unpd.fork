@@ -96,11 +96,20 @@ file.copy(from = file.path(path_to_global_run_married, cc_fname),
           to = here::here("data-raw", cc_fname),
           overwrite = TRUE)
 
-division_classifications <-
+divisions <-
     FPEMglobal.aux::country_classifications_2_fpemdata(path_to_global_run_married)
 
 ## Save as package data
-usethis::use_data(division_classifications, overwrite = TRUE)
+usethis::use_data(divisions, overwrite = TRUE)
+
+
+### FP2020 Data file
+### This is copied from
+### '[fpemlocal]/vignettes/developer_annual_data_updates.Rmd
+temp <- read.csv(here::here("data-raw/legacy.csv"))
+fp2020 <- temp %>% dplyr::filter(FP2020.country == "Yes") %>%
+    dplyr::select(division_numeric_code)
+usethis::use_data(fp2020, overwrite = TRUE)
 
 ###-----------------------------------------------------------------------------
 ### * FPEMglobal Model Run Outputs
@@ -133,6 +142,14 @@ globalrun_output_m <-
     FPEMglobal.aux::get_hierarchical_medians(path_to_global_run_married)
 globalrun_output_u <-
     FPEMglobal.aux::get_hierarchical_medians(path_to_global_run_unmarried)
+
+usethis::use_data(index_m, index_u,
+                  globalrun_input_m,
+                  globalrun_input_u,
+                  globalrun_output_m,
+                  globalrun_output_u,
+                  internal = TRUE,
+                  overwrite= TRUE)
 
 ###-----------------------------------------------------------------------------
 ### ** Prevalence Estimates
