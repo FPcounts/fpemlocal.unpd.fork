@@ -6,10 +6,12 @@
 ###
 ### PROJECT: fpemlocal_unpd_fork
 ###
-### DESCRIPTION: Make input data for this package from the latest FPEMglobal
-### revision.
+### DESCRIPTION: Make input data for this package from an FPEMglobal revision.
 ###
 ###-----------------------------------------------------------------------------
+###
+### ** TESTING STAGE ** --- Will use the 2022 revision as a base and compare
+### ** results when fitting one-country model with updated (2024) data.
 ###
 ################################################################################
 
@@ -23,7 +25,7 @@
 ## names equal to the package names. Use 'NA' if version is not specified.
 pkgs_vers <-
     c("dplyr" = NA, "FPEMglobal.aux" = "1.2.0.9000",
-      "fpemlocal.unpd.fork" = NA, "here" = NA, "purrr" = NA,
+      "fpemlocal" = NA, "here" = NA, "purrr" = NA,
       "tidyr" = NA, "usethis" = NA)
 rlang::check_installed(names(pkgs_vers), version = pkgs_vers)
 
@@ -35,18 +37,18 @@ library(magrittr)
 
 ### Married
 
-path_to_global_run_married <-
-    file.path(Sys.getenv("SharePoint_UN", unset = NA),
-              "DESA-POP - PDU", "FPEM", "Results", "Released", "2024", "output",
-              "240702_173547_15-49_married")
+path_to_global_run_married <- "D:/FPEM/2022/Released/age_total/15-49_mwra"
+    ## file.path(Sys.getenv("SharePoint_UN", unset = NA),
+    ##           "DESA-POP - PDU", "FPEM", "Results", "Released", "2024", "output",
+    ##           "240702_173547_15-49_married")
 stopifnot(dir.exists(path_to_global_run_married))
 
 ### Unmarried
 
-path_to_global_run_unmarried <-
-    file.path(Sys.getenv("SharePoint_UN", unset = NA),
-              "DESA-POP - PDU", "FPEM", "Results", "Released", "2024", "output",
-              "240702_173547_15-49_unmarried")
+path_to_global_run_unmarried <- "D:/FPEM/2022/Released/age_total/15-49_uwra"
+    ## file.path(Sys.getenv("SharePoint_UN", unset = NA),
+    ##           "DESA-POP - PDU", "FPEM", "Results", "Released", "2024", "output",
+    ##           "240702_173547_15-49_unmarried")
 stopifnot(dir.exists(path_to_global_run_unmarried))
 
 ###-----------------------------------------------------------------------------
@@ -66,7 +68,7 @@ file.copy(from = file.path(path_to_global_run_married, "dataCPmodel_input_raw.cs
 ## Read and impute
 contraceptive_use <-
     FPEMglobal.aux::input_data_2_fpemdata(output_dir = path_to_global_run_married) %>%
-    fpemlocal.unpd.fork::impute_packagedata_se() %>%
+    fpemlocal::impute_packagedata_se() %>%
         purrr::pluck("contraceptive_use_imputed")
 
 ## Save as package data
@@ -125,13 +127,13 @@ globalrun_input_m <-
 globalrun_input_u <-
     FPEMglobal.aux::get_model_meta_info(path_to_global_run_unmarried)
 
-index_area <- fpemlocal.unpd.fork::index_area(globalrun_input_m, run_type = "mwra")
-index_datatype <- fpemlocal.unpd.fork::index_datatype(globalrun_input_m)
+index_area <- fpemlocal::index_area(globalrun_input_m, run_type = "mwra")
+index_datatype <- fpemlocal::index_datatype(globalrun_input_m)
 index_m <- list(index_area_df = index_area,
                 index_datatype = index_datatype)
 
-index_area <- fpemlocal.unpd.fork::index_area(globalrun_input_u, run_type = "uwra")
-index_datatype <- fpemlocal.unpd.fork::index_datatype(globalrun_input_u)
+index_area <- fpemlocal::index_area(globalrun_input_u, run_type = "uwra")
+index_datatype <- fpemlocal::index_datatype(globalrun_input_u)
 index_u <- list(index_area_df = index_area,
                 index_datatype = index_datatype)
 

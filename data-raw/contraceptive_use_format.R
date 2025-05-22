@@ -1,6 +1,6 @@
 # This format list uses the data above. The format list is used to check user survey data.
 library(dplyr)
-data <- fpemlocal.unpd.fork::contraceptive_use
+data <- fpemlocal::contraceptive_use
 #missing = FLASE if missing not allowed
 contraceptive_use_format <- list(
   "division_numeric_code" = list(

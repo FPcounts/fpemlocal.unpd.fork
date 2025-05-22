@@ -7,8 +7,8 @@ ECHO.===========================================================================
 ECHO. DATA
 ECHO.================================================================================
 
-rem Rscript -e "setwd('data-raw'); example(source); sourceDir('.')"
-rem if %ERRORLEVEL% GEQ 1 PAUSE
+Rscript -e "setwd('data-raw'); example(source); sourceDir('.')"
+if %ERRORLEVEL% GEQ 1 PAUSE
 
 ECHO.
 ECHO.
@@ -60,7 +60,7 @@ ECHO.
 ECHO. Testthat
 ECHO.--------------------------------------------------------------------------------
 
-Rscript -e "testthat::test_package('FPEMglobal.aux')"
+Rscript -e "testthat::test_package('fpemlocal.unpd.fork')"
 if %ERRORLEVEL% GEQ 1 PAUSE
 
 
@@ -68,7 +68,7 @@ ECHO.
 ECHO. Slow Tests
 ECHO.--------------------------------------------------------------------------------
 
-Rscript "inst/slowTests/slowTest-results_get_csv_results_1549.R"
+Rscript -e "setwd('inst/slowTests'); example(source); sourceDir('.')"
 if %ERRORLEVEL% GEQ 1 PAUSE
 
 ECHO.
